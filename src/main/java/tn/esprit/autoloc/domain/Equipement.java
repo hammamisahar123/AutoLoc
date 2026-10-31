@@ -1,11 +1,14 @@
 package tn.esprit.autoloc.domain;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "equipement")
@@ -19,5 +22,18 @@ public class Equipement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEquipement;
 
+    @Column(nullable = false, length = 100)
     private String libelle;
+
+    // =============================================
+    // ASSOCIATION : Equipement ↔ Vehicules (côté INVERSE)
+    // =============================================
+    // → @ManyToMany côté INVERSE
+    // → mappedBy = "equipements" : c'est VEHICULE qui porte la table de jointure
+    //   donc EQUIPEMENT est le côté inverse → il reçoit mappedBy
+    // → "equipements" = nom exact de l'attribut List<Equipement> dans Vehicule.java
+    // → @JsonIgnore : évite la boucle infinie JSON
+    @ManyToMany(mappedBy = "equipements", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Vehicule> vehicules = new ArrayList<>();
 }
